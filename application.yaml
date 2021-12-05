@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1 #periodically validate on argocd website
+kind: Application
+metadata:
+  name: myapp-argo-application
+  namespace: argocd
+spec:
+  project: default
+
+  source: 
+    repoURL: https://github.com/scarmel/argocd-app-config.git
+    targetRevision: HEAD #argocd will track the latest changes
+    path: dev
+  destination:
+    server: https://kubernetes.default.svc #the local cluster running in minikube. can be set to external
+    namespace: myapp #namespace to apply the changes
+
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true #argo will create the namespace if not exists
+
+    automated: #argocd will check the repo every 3 minutes by default 
+      selfHeal: true #argocd will overide any manual changes automatically
+      prune: true
+
+
